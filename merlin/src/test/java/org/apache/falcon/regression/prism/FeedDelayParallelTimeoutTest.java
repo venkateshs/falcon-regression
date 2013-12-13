@@ -32,11 +32,14 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
 
+/**
+ * FeedDelayParallelTimeoutTest.
+ */
 public class FeedDelayParallelTimeoutTest {
 
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
-    ColoHelper gs1001 = new ColoHelper("gs1001.config.properties");
-    ColoHelper ivoryqa1 = new ColoHelper("ivoryqa-1.config.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final ColoHelper gs1001 = new ColoHelper("gs1001.config.properties");
+    private final ColoHelper ivoryqa1 = new ColoHelper("ivoryqa-1.config.properties");
 
 
     @BeforeMethod(alwaysRun = true)
@@ -60,16 +63,16 @@ public class FeedDelayParallelTimeoutTest {
 
             Bundle.submitCluster(b1, b2);
             String feedOutput01 = b1.getDataSets().get(0);
+/*
             org.apache.falcon.regression.core.generated.dependencies.Frequency delay =
                     new org.apache.falcon.regression.core.generated.dependencies.Frequency(
                             "hours(5)");
+*/
 
-            feedOutput01 = InstanceUtil
-                    .setFeedCluster(feedOutput01,
-                            XmlUtil.createValidity("2010-10-01T12:00Z", "2099-01-01T00:00Z"),
-                            XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
-                            ClusterType.SOURCE, null,
-                            null);
+            feedOutput01 = InstanceUtil.setFeedCluster(feedOutput01,
+                    XmlUtil.createValidity("2010-10-01T12:00Z", "2099-01-01T00:00Z"),
+                    XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
+                    ClusterType.SOURCE, null);
 
             // uncomment below 2 line when falcon in sync with ivory
 
@@ -104,10 +107,6 @@ public class FeedDelayParallelTimeoutTest {
 
         } finally {
             b1.deleteBundle(prismHelper);
-
         }
-
     }
-
-
 }

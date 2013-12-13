@@ -30,10 +30,13 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Method;
 
 
+/**
+ * Optional inputs test.
+ */
 public class OptionalInputTest {
 
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
-    ColoHelper ivoryqa1 = new ColoHelper("gs1001.config.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final ColoHelper ivoryqa1 = new ColoHelper("gs1001.config.properties");
 
     @BeforeMethod(alwaysRun = true)
     public void testName(Method method) {

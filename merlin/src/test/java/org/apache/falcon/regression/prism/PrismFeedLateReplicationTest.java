@@ -36,6 +36,10 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+/**
+ * Feed late replication tests.
+ */
+@SuppressWarnings("deprecation")
 public class PrismFeedLateReplicationTest {
 
 
@@ -46,21 +50,12 @@ public class PrismFeedLateReplicationTest {
         //	Util.restartService(ua1.getClusterHelper());
         //	Util.restartService(ua2.getClusterHelper());
         //	Util.restartService(ua3.getClusterHelper());
-
-
     }
 
-    public PrismFeedLateReplicationTest() throws Exception {
-
-    }
-
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
-
-    ColoHelper ua1 = new ColoHelper("gs1001.config.properties");
-
-    ColoHelper ua2 = new ColoHelper("ivoryqa-1.config.properties");
-
-    ColoHelper ua3 = new ColoHelper("mk-qa.config.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final ColoHelper ua1 = new ColoHelper("gs1001.config.properties");
+    private final ColoHelper ua2 = new ColoHelper("ivoryqa-1.config.properties");
+    private final ColoHelper ua3 = new ColoHelper("mk-qa.config.properties");
 
     @SuppressWarnings("deprecation")
     @Test(groups = {"multiCluster"})
@@ -86,23 +81,23 @@ public class PrismFeedLateReplicationTest {
             b1.setCLusterColo("ua1");
             Util.print("cluster b1: " + b1.getClusters().get(0));
 
-            ServiceResponse r = prismHelper.getClusterHelper()
+            ServiceResponse response = prismHelper.getClusterHelper()
                     .submitEntity(URLS.SUBMIT_URL, b1.getClusters().get(0));
-            Assert.assertTrue(r.getMessage().contains("SUCCEEDED"));
+            Assert.assertTrue(response.getMessage().contains("SUCCEEDED"));
 
 
             b2.setCLusterColo("ua2");
             Util.print("cluster b2: " + b2.getClusters().get(0));
-            r = prismHelper.getClusterHelper()
+            response = prismHelper.getClusterHelper()
                     .submitEntity(URLS.SUBMIT_URL, b2.getClusters().get(0));
-            Assert.assertTrue(r.getMessage().contains("SUCCEEDED"));
+            Assert.assertTrue(response.getMessage().contains("SUCCEEDED"));
 
 
             b3.setCLusterColo("ua3");
             Util.print("cluster b3: " + b3.getClusters().get(0));
-            r = prismHelper.getClusterHelper()
+            response = prismHelper.getClusterHelper()
                     .submitEntity(URLS.SUBMIT_URL, b3.getClusters().get(0));
-            Assert.assertTrue(r.getMessage().contains("SUCCEEDED"));
+            Assert.assertTrue(response.getMessage().contains("SUCCEEDED"));
 
 
             String feed = b1.getDataSets().get(0);
@@ -143,7 +138,7 @@ public class PrismFeedLateReplicationTest {
 
             Util.print("feed: " + feed);
 
-            r = prismHelper.getFeedHelper().submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
+            prismHelper.getFeedHelper().submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
             Thread.sleep(10000);
 
             String TargetBundleID = InstanceUtil
@@ -240,8 +235,7 @@ public class PrismFeedLateReplicationTest {
 
             Util.print("feed: " + feed);
 
-            ServiceResponse r = prismHelper.getFeedHelper()
-                    .submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
+            prismHelper.getFeedHelper().submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
             Thread.sleep(10000);
 
 
@@ -443,8 +437,7 @@ public class PrismFeedLateReplicationTest {
             //submit and schedule feed
             Util.print("feed: " + feed);
 
-            ServiceResponse r = prismHelper.getFeedHelper()
-                    .submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
+            prismHelper.getFeedHelper().submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
             Thread.sleep(10000);
 
             //wait till 1st instance of replication coord is SUCCEEDED
@@ -687,7 +680,7 @@ public class PrismFeedLateReplicationTest {
             Util.print("feed: " + feed);
 
 
-            r = prismHelper.getFeedHelper().submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
+            prismHelper.getFeedHelper().submitAndSchedule(URLS.SUBMIT_AND_SCHEDULE_URL, feed);
             Thread.sleep(10000);
 
             //wait till 1st instance of replication coord is SUCCEEDED

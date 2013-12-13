@@ -37,6 +37,9 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Cluster entity delete tests.
+ */
 public class PrismClusterDeleteTest {
 
 
@@ -46,9 +49,9 @@ public class PrismClusterDeleteTest {
     }
 
 
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
-    ColoHelper UA1ColoHelper = new ColoHelper("mk-qa.config.properties");
-    ColoHelper UA2ColoHelper = new ColoHelper("ivoryqa-1.config.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final ColoHelper UA1ColoHelper = new ColoHelper("mk-qa.config.properties");
+    private final ColoHelper UA2ColoHelper = new ColoHelper("ivoryqa-1.config.properties");
 
     @Test(dataProvider = "DP", groups = {"multiCluster"})
     public void testUA1ClusterDeleteInBothColos(Bundle bundle) throws Exception {
@@ -128,7 +131,7 @@ public class PrismClusterDeleteTest {
 
             //fetch the initial store and archive for both colos
             List<String> initialUA1Store = UA1ColoHelper.getClusterHelper().getStoreInfo();
-            List<String> initialUA1ArchiveStore = UA1ColoHelper.getClusterHelper().getArchiveInfo();
+            // List<String> initialUA1ArchiveStore = UA1ColoHelper.getClusterHelper().getArchiveInfo();
 
             List<String> initialUA2Store = UA2ColoHelper.getClusterHelper().getStoreInfo();
             List<String> initialUA2ArchiveStore = UA2ColoHelper.getClusterHelper().getArchiveInfo();
@@ -252,7 +255,7 @@ public class PrismClusterDeleteTest {
             //now ensure that data has been deleted from all cluster store and is present in the
             // cluster archives
 
-            String clusterName = Util.readClusterName(bundle.getClusters().get(0));
+            // String clusterName = Util.readClusterName(bundle.getClusters().get(0));
             //prism:
             Assert.assertTrue(Arrays.deepEquals(
                     initialPrismStore.toArray(new String[initialPrismStore.size()]),
@@ -413,7 +416,7 @@ public class PrismClusterDeleteTest {
             //now ensure that data has been deleted from all cluster store and is present in the
             // cluster archives
 
-            String clusterName = Util.readClusterName(bundle.getClusters().get(0));
+            // String clusterName = Util.readClusterName(bundle.getClusters().get(0));
             //prism:
             Assert.assertTrue(Arrays.deepEquals(
                     initialPrismStore.toArray(new String[initialPrismStore.size()]),
@@ -493,7 +496,7 @@ public class PrismClusterDeleteTest {
             //now ensure that data has been deleted from all cluster store and is present in the
             // cluster archives
 
-            String clusterName = Util.readClusterName(bundle.getClusters().get(0));
+            // String clusterName = Util.readClusterName(bundle.getClusters().get(0));
             //prism:
             Assert.assertTrue(Arrays.deepEquals(
                     initialPrismStore.toArray(new String[initialPrismStore.size()]),

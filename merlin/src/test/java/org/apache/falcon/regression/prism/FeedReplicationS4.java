@@ -29,12 +29,15 @@ import org.apache.falcon.regression.core.util.Util.URLS;
 import org.apache.falcon.regression.core.util.XmlUtil;
 import org.testng.annotations.Test;
 
+/**
+ * Feed replicaiton to s4 tests.
+ */
 public class FeedReplicationS4 {
 
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
 
-    ColoHelper ua1 = new ColoHelper("gs1001.config.properties");
-    ColoHelper ua2 = new ColoHelper("ivoryqa-1.config.properties");
+    private final ColoHelper ua1 = new ColoHelper("gs1001.config.properties");
+    private final ColoHelper ua2 = new ColoHelper("ivoryqa-1.config.properties");
 
     @Test(enabled = true, timeOut = 1200000)
     public void ReplicationFromS4() throws Exception {
@@ -53,24 +56,22 @@ public class FeedReplicationS4 {
             //Bundle.submitCluster(b1,b2);
 
             String feedOutput01 = b1.getDataSets().get(0);
-            feedOutput01 = InstanceUtil
-                    .setFeedCluster(feedOutput01,
-                            XmlUtil.createValidity("2010-10-01T12:00Z", "2099-01-01T00:00Z"),
-                            XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
-                            ClusterType.SOURCE, null,
-                            null);
-            feedOutput01 = InstanceUtil
-                    .setFeedCluster(feedOutput01,
-                            XmlUtil.createValidity("2012-12-06T05:00Z", "2099-10-01T12:10Z"),
-                            XmlUtil.createRtention("minutes(5)", ActionType.DELETE),
-                            Util.readClusterName(b2.getClusters().get(0)), ClusterType.SOURCE, "",
-                            "s4://inmobi-iat-data/userplatform/${YEAR}/${MONTH}/${DAY}/${HOUR}");
-            feedOutput01 = InstanceUtil
-                    .setFeedCluster(feedOutput01,
-                            XmlUtil.createValidity("2012-12-06T05:00Z", "2099-10-01T12:25Z"),
-                            XmlUtil.createRtention("minutes(5)", ActionType.DELETE),
-                            Util.readClusterName(b1.getClusters().get(0)), ClusterType.TARGET, "",
-                            "/replicationS4/${YEAR}/${MONTH}/${DAY}/${HOUR}");
+            feedOutput01 = InstanceUtil.setFeedCluster(feedOutput01,
+                    XmlUtil.createValidity("2010-10-01T12:00Z", "2099-01-01T00:00Z"),
+                    XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
+                    ClusterType.SOURCE, null);
+
+            feedOutput01 = InstanceUtil.setFeedCluster(feedOutput01,
+                    XmlUtil.createValidity("2012-12-06T05:00Z", "2099-10-01T12:10Z"),
+                    XmlUtil.createRtention("minutes(5)", ActionType.DELETE),
+                    Util.readClusterName(b2.getClusters().get(0)), ClusterType.SOURCE, "",
+                    "s4://inmobi-iat-data/userplatform/${YEAR}/${MONTH}/${DAY}/${HOUR}");
+
+            feedOutput01 = InstanceUtil.setFeedCluster(feedOutput01,
+                    XmlUtil.createValidity("2012-12-06T05:00Z", "2099-10-01T12:25Z"),
+                    XmlUtil.createRtention("minutes(5)", ActionType.DELETE),
+                    Util.readClusterName(b1.getClusters().get(0)), ClusterType.TARGET, "",
+                    "/replicationS4/${YEAR}/${MONTH}/${DAY}/${HOUR}");
 
             System.out.println(feedOutput01);
             Bundle.submitCluster(b1, b2);
@@ -81,5 +82,4 @@ public class FeedReplicationS4 {
             b1.deleteBundle(prismHelper);
         }
     }
-
 }

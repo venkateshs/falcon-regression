@@ -48,6 +48,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Feed delete tests.
+ * NOTE: All test cases assume that there are two entities scheduled in each colo
+*/
 public class PrismFeedDeleteTest {
 
 
@@ -57,16 +61,10 @@ public class PrismFeedDeleteTest {
     }
 
 
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
-    ColoHelper UA1ColoHelper = new ColoHelper("mk-qa.config.properties");
-    ColoHelper UA2ColoHelper = new ColoHelper("ivoryqa-1.config.properties");
-    ColoHelper UA3ColoHelper = new ColoHelper("gs1001.config.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final ColoHelper UA1ColoHelper = new ColoHelper("mk-qa.config.properties");
+    private final ColoHelper UA2ColoHelper = new ColoHelper("ivoryqa-1.config.properties");
 
-    ColoHelper ua1 = new ColoHelper("mk-qa.config.properties");
-
-    ColoHelper ua2 = new ColoHelper("ivoryqa-1.config.properties");
-    ColoHelper ua3 = new ColoHelper("gs1001.config.properties");
-/* NOTE: All test cases assume that there are two entities scheduled in each colo */
 
     @Test(dataProvider = "DP", groups = {"multiCluster"})
     public void testUA1FeedDeleteInBothColos(Bundle bundle) throws Exception {
@@ -366,7 +364,7 @@ String[initialUA1ArchiveStore.size
             //now ensure that data has been deleted from all cluster store and is present in the
             // cluster archives
 
-            String clusterName = Util.readDatasetName(UA1Bundle.getDataSets().get(0));
+            // String clusterName = Util.readDatasetName(UA1Bundle.getDataSets().get(0));
             //prism:
             Assert.assertTrue(Arrays.deepEquals(
                     initialPrismStore.toArray(new String[initialPrismStore.size()]),
@@ -533,7 +531,6 @@ String[initialUA1ArchiveStore.size
             //now ensure that data has been deleted from all cluster store and is present in the
             // cluster archives
 
-            String clusterName = Util.readDatasetName(UA1Bundle.getDataSets().get(0));
             //prism:
             Assert.assertTrue(Arrays.deepEquals(
                     initialPrismStore.toArray(new String[initialPrismStore.size()]),
@@ -602,7 +599,7 @@ String[initialUA1ArchiveStore.size
             feed = InstanceUtil.setFeedCluster(feed,
                     XmlUtil.createValidity("2012-10-01T12:00Z", "2010-01-01T00:00Z"),
                     XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
-                    ClusterType.SOURCE, null, null);
+                    ClusterType.SOURCE, null);
             feed = InstanceUtil
                     .setFeedCluster(feed, XmlUtil.createValidity(startTimeUA1, "2099-10-01T12:10Z"),
                             XmlUtil.createRtention("days(10000)", ActionType.DELETE),
@@ -1152,7 +1149,7 @@ String[initialUA1ArchiveStore.size
             feed = InstanceUtil.setFeedCluster(feed,
                     XmlUtil.createValidity("2012-10-01T12:00Z", "2010-01-01T00:00Z"),
                     XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
-                    ClusterType.SOURCE, null, null);
+                    ClusterType.SOURCE, null);
             feed = InstanceUtil
                     .setFeedCluster(feed, XmlUtil.createValidity(startTimeUA1, "2099-10-01T12:10Z"),
                             XmlUtil.createRtention("days(10000)", ActionType.DELETE),
@@ -1277,7 +1274,7 @@ String[initialUA1ArchiveStore.size
             feed = InstanceUtil.setFeedCluster(feed,
                     XmlUtil.createValidity("2012-10-01T12:00Z", "2010-01-01T00:00Z"),
                     XmlUtil.createRtention("days(10000)", ActionType.DELETE), null,
-                    ClusterType.SOURCE, null, null);
+                    ClusterType.SOURCE, null);
             feed = InstanceUtil
                     .setFeedCluster(feed, XmlUtil.createValidity(startTimeUA1, "2099-10-01T12:10Z"),
                             XmlUtil.createRtention("days(10000)", ActionType.DELETE),

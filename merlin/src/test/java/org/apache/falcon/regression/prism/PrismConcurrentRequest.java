@@ -21,7 +21,6 @@ package org.apache.falcon.regression.prism;
 import org.apache.falcon.regression.core.bundle.Bundle;
 import org.apache.falcon.regression.core.helpers.ColoHelper;
 import org.apache.falcon.regression.core.helpers.PrismHelper;
-import org.apache.falcon.regression.core.response.ServiceResponse;
 import org.apache.falcon.regression.core.supportClasses.Brother;
 import org.apache.falcon.regression.core.supportClasses.ENTITY_TYPE;
 import org.apache.falcon.regression.core.util.Util;
@@ -32,7 +31,9 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Method;
 
-
+/**
+ * Concurrent requests tests.
+ */
 public class PrismConcurrentRequest {
 
     @BeforeMethod(alwaysRun = true)
@@ -41,15 +42,8 @@ public class PrismConcurrentRequest {
     }
 
 
-    public PrismConcurrentRequest() throws Exception {
-
-    }
-
-    PrismHelper prismHelper = new PrismHelper("prism.properties");
-
-    ColoHelper UA1coloHelper = new ColoHelper("mk-qa.config.properties");
-
-    ColoHelper ivoryqa1 = new ColoHelper("ivoryqa-1.config.properties");
+    private final PrismHelper prismHelper = new PrismHelper("prism.properties");
+    private final ColoHelper UA1coloHelper = new ColoHelper("mk-qa.config.properties");
 
 
     @Test(groups = {"multiCluster"})
@@ -58,51 +52,45 @@ public class PrismConcurrentRequest {
         Bundle b = (Bundle) Util.readELBundles()[0][0];
         b.generateUniqueBundle();
 
-        try {
+        b = new Bundle(b, UA1coloHelper.getEnvFileName());
+
+        ThreadGroup brotherGrimm = new ThreadGroup("mixed");
+
+        Brother brothers[] = new Brother[10];
+        int failedResponse = 0;
+        int succeedeResponse = 0;
+
+        prismHelper.getClusterHelper().submitEntity(URLS.SUBMIT_URL, b.getClusterData());
 
 
-            b = new Bundle(b, UA1coloHelper.getEnvFileName());
-
-            ThreadGroup brotherGrimm = new ThreadGroup("mixed");
-
-            Brother brothers[] = new Brother[10];
-            int failedResponse = 0;
-            int succeedeResponse = 0;
-
-            prismHelper.getClusterHelper().submitEntity(URLS.SUBMIT_URL, b.getClusterData());
-
-
-            for (int i = 1; i <= brothers.length; i++) {
-                brothers[i - 1] =
-                        new Brother("brother" + i, "submit", ENTITY_TYPE.DATA, brotherGrimm, b,
-                                prismHelper,
-                                URLS.SUBMIT_URL);
-
-            }
-
-            for (Brother brother : brothers) {
-                brother.start();
-
-            }
-
-            Thread.sleep(60000);
-
-            for (Brother brother : brothers) {
-
-                if (brother.getOutput().getMessage().contains("SUCCEEDED"))
-                    succeedeResponse++;
-                else if (brother.getOutput().getMessage().contains("FAILED"))
-                    failedResponse++;
-            }
-
-            Assert.assertEquals(succeedeResponse, 1);
-            Assert.assertEquals(failedResponse, 9);
-
-            Thread.sleep(60000);
-
-        } finally {
+        for (int i = 1; i <= brothers.length; i++) {
+            brothers[i - 1] =
+                    new Brother("brother" + i, "submit", ENTITY_TYPE.DATA, brotherGrimm, b,
+                            prismHelper,
+                            URLS.SUBMIT_URL);
 
         }
+
+        for (Brother brother : brothers) {
+            brother.start();
+
+        }
+
+        Thread.sleep(60000);
+
+        for (Brother brother : brothers) {
+
+            if (brother.getOutput().getMessage().contains("SUCCEEDED"))
+                succeedeResponse++;
+            else if (brother.getOutput().getMessage().contains("FAILED"))
+                failedResponse++;
+        }
+
+        Assert.assertEquals(succeedeResponse, 1);
+        Assert.assertEquals(failedResponse, 9);
+
+        Thread.sleep(60000);
+
     }
 
     @Test(groups = {"multiCluster"})
@@ -111,53 +99,48 @@ public class PrismConcurrentRequest {
         Bundle b = (Bundle) Util.readELBundles()[0][0];
         b.generateUniqueBundle();
 
-        try {
+
+        b = new Bundle(b, UA1coloHelper.getEnvFileName());
+
+        ThreadGroup brotherGrimm = new ThreadGroup("mixed");
+
+        Brother brothers[] = new Brother[10];
+        int failedResponse = 0;
+        int succeedeResponse = 0;
+
+        prismHelper.getClusterHelper().submitEntity(URLS.SUBMIT_URL, b.getClusterData());
+        prismHelper.getFeedHelper().submitEntity(URLS.SUBMIT_URL, b.getDataSets().get(0));
+        prismHelper.getFeedHelper().submitEntity(URLS.SUBMIT_URL, b.getDataSets().get(1));
 
 
-            b = new Bundle(b, UA1coloHelper.getEnvFileName());
-
-            ThreadGroup brotherGrimm = new ThreadGroup("mixed");
-
-            Brother brothers[] = new Brother[10];
-            int failedResponse = 0;
-            int succeedeResponse = 0;
-
-            prismHelper.getClusterHelper().submitEntity(URLS.SUBMIT_URL, b.getClusterData());
-            prismHelper.getFeedHelper().submitEntity(URLS.SUBMIT_URL, b.getDataSets().get(0));
-            prismHelper.getFeedHelper().submitEntity(URLS.SUBMIT_URL, b.getDataSets().get(1));
-
-
-            for (int i = 1; i <= brothers.length; i++) {
-                brothers[i - 1] =
-                        new Brother("brother" + i, "submit", ENTITY_TYPE.PROCESS, brotherGrimm, b,
-                                prismHelper,
-                                URLS.SUBMIT_URL);
-
-            }
-
-            for (Brother brother : brothers) {
-                brother.start();
-
-            }
-
-            Thread.sleep(60000);
-
-            for (Brother brother : brothers) {
-
-                if (brother.getOutput().getMessage().contains("SUCCEEDED"))
-                    succeedeResponse++;
-                else if (brother.getOutput().getMessage().contains("FAILED"))
-                    failedResponse++;
-            }
-
-            Assert.assertEquals(succeedeResponse, 1);
-            Assert.assertEquals(failedResponse, 9);
-
-            Thread.sleep(60000);
-
-        } finally {
+        for (int i = 1; i <= brothers.length; i++) {
+            brothers[i - 1] =
+                    new Brother("brother" + i, "submit", ENTITY_TYPE.PROCESS, brotherGrimm, b,
+                            prismHelper,
+                            URLS.SUBMIT_URL);
 
         }
+
+        for (Brother brother : brothers) {
+            brother.start();
+
+        }
+
+        Thread.sleep(60000);
+
+        for (Brother brother : brothers) {
+
+            if (brother.getOutput().getMessage().contains("SUCCEEDED"))
+                succeedeResponse++;
+            else if (brother.getOutput().getMessage().contains("FAILED"))
+                failedResponse++;
+        }
+
+        Assert.assertEquals(succeedeResponse, 1);
+        Assert.assertEquals(failedResponse, 9);
+
+        Thread.sleep(60000);
+
     }
 
 
@@ -300,8 +283,7 @@ public class PrismConcurrentRequest {
 
             prismHelper.getClusterHelper().submitEntity(URLS.SUBMIT_URL, b.getClusterData());
             prismHelper.getFeedHelper().submitEntity(URLS.SUBMIT_URL, b.getDataSets().get(0));
-            ServiceResponse r =
-                    prismHelper.getFeedHelper().schedule(URLS.SCHEDULE_URL, b.getDataSets().get(0));
+            // ServiceResponse r = prismHelper.getFeedHelper().schedule(URLS.SCHEDULE_URL, b.getDataSets().get(0));
             Thread.sleep(15000);
             prismHelper.getFeedHelper().suspend(URLS.SUSPEND_URL, b.getDataSets().get(0));
             Thread.sleep(15000);
@@ -369,8 +351,7 @@ public class PrismConcurrentRequest {
 
             prismHelper.getClusterHelper().submitEntity(URLS.SUBMIT_URL, b.getClusterData());
             prismHelper.getFeedHelper().submitEntity(URLS.SUBMIT_URL, b.getDataSets().get(0));
-            ServiceResponse r =
-                    prismHelper.getFeedHelper().schedule(URLS.SCHEDULE_URL, b.getDataSets().get(0));
+            // ServiceResponse r = prismHelper.getFeedHelper().schedule(URLS.SCHEDULE_URL, b.getDataSets().get(0));
             Thread.sleep(15000);
 
 
@@ -384,13 +365,11 @@ public class PrismConcurrentRequest {
                         new Brother("brother" + i, "resume", ENTITY_TYPE.DATA, brotherGrimm, b,
                                 prismHelper,
                                 URLS.RESUME_URL);
-
             }
 
 
             for (Brother brother : brothers) {
                 brother.start();
-
             }
 
             Thread.sleep(60000);
@@ -425,49 +404,44 @@ public class PrismConcurrentRequest {
         Bundle b = (Bundle) Util.readELBundles()[0][0];
         b.generateUniqueBundle();
 
-        try {
+
+        b = new Bundle(b, UA1coloHelper.getEnvFileName());
+
+        ThreadGroup brotherGrimm = new ThreadGroup("mixed");
+
+        Brother brothers[] = new Brother[10];
+        int failedResponse = 0;
+        int succeedeResponse = 0;
 
 
-            b = new Bundle(b, UA1coloHelper.getEnvFileName());
-
-            ThreadGroup brotherGrimm = new ThreadGroup("mixed");
-
-            Brother brothers[] = new Brother[10];
-            int failedResponse = 0;
-            int succeedeResponse = 0;
-
-
-            for (int i = 1; i <= brothers.length; i++) {
-                brothers[i - 1] =
-                        new Brother("brother" + i, "submit", ENTITY_TYPE.CLUSTER, brotherGrimm, b,
-                                prismHelper,
-                                URLS.SUBMIT_URL);
-
-            }
-
-            for (Brother brother : brothers) {
-                brother.start();
-
-            }
-
-            Thread.sleep(60000);
-
-            for (Brother brother : brothers) {
-
-                if (brother.getOutput().getMessage().contains("SUCCEEDED"))
-                    succeedeResponse++;
-                else if (brother.getOutput().getMessage().contains("FAILED"))
-                    failedResponse++;
-            }
-
-            Assert.assertEquals(succeedeResponse, 1);
-            Assert.assertEquals(failedResponse, 9);
-
-            Thread.sleep(60000);
-
-        } finally {
+        for (int i = 1; i <= brothers.length; i++) {
+            brothers[i - 1] =
+                    new Brother("brother" + i, "submit", ENTITY_TYPE.CLUSTER, brotherGrimm, b,
+                            prismHelper,
+                            URLS.SUBMIT_URL);
 
         }
+
+        for (Brother brother : brothers) {
+            brother.start();
+
+        }
+
+        Thread.sleep(60000);
+
+        for (Brother brother : brothers) {
+
+            if (brother.getOutput().getMessage().contains("SUCCEEDED"))
+                succeedeResponse++;
+            else if (brother.getOutput().getMessage().contains("FAILED"))
+                failedResponse++;
+        }
+
+        Assert.assertEquals(succeedeResponse, 1);
+        Assert.assertEquals(failedResponse, 9);
+
+        Thread.sleep(60000);
+
     }
 
 }
